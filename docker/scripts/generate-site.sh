@@ -8,8 +8,6 @@ cd $folderName
 
 bin/linux_x86_64/site_builder -generate -folder .
 
-cp ./static/CNAME ./docs/CNAME
-
 git config --global user.email ${GIT_EMAIL}
 git config --global user.name ${GIT_NAME}
 git add .
