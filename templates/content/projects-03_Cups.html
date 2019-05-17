@@ -1,0 +1,17 @@
+{{ define "content" }}
+{{ $project := truncProj . }}
+
+<div class="projectName">  {{ $project }} </div>
+
+    <div class="photosContainer">
+        <div id="photos-list">
+            {{range imagesForProject $project }}
+                <div class="photo-url" data-img-name="/static/images/projects/{{ $project }}/thumbnails/{{ . }}"></div>
+            {{end}}
+        </div> <!--photo-list -->
+    </div> <!-- photo container -->
+
+
+{{ end }}
+
+{{ define "title" }} Projects | {{ truncProj . }} {{ end }}
