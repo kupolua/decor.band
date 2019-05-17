@@ -1,0 +1,14 @@
+{{ define "content" }}
+
+<div class="photosContainer">
+    <div id="photos-list">
+        {{range images}}
+            <div class="photo-url"data-img-name="/static/images/portfolio/thumbnails/{{ . }}"></div>
+        {{end}}
+    </div> <!--photo-list -->
+</div> <!-- photo container -->
+
+
+{{ end }}
+
+{{ define "title" }} Portfolio {{ end }}

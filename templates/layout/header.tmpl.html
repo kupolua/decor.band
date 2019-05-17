@@ -1,0 +1,50 @@
+{{ define "header" }}
+    <div class="menu">
+    <!-- PORTFOLIO -->
+    <div class="menuItem">
+        {{ if eq . "index.html" }}
+            PORTFOLIO
+        {{ else }}
+            <a href="/index.html" >
+                PORTFOLIO
+            </a>
+        {{ end }}
+    </div>
+
+    <!-- BIO -->
+    <div class="menuItem">
+        {{ if eq . "bio.html" }}
+            BIO
+        {{ else }}
+            <a href="/bio.html" >
+                BIO
+            </a>
+        {{ end }}
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="menuItem">
+        {{ if isProject . }}
+            <a href="/projects.html" class="menu-item-inactive">
+                PROJECTS
+            </a>
+        {{ else }}
+            <a href="/projects.html" >
+                PROJECTS
+            </a>
+        {{ end }}
+    </div>
+
+    <!-- CONTACT -->
+    <div class="menuItem">
+        {{ if eq . "contact.html" }}
+            CONTACT
+        {{ else }}
+            <a href="/contact.html" >
+                CONTACT
+            </a>
+        {{ end }}
+    </div>
+
+</div>
+{{ end }}

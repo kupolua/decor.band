@@ -1,0 +1,13 @@
+{{ define "content" }}
+
+
+<div class="projects-container">
+{{range projects}}
+        <a href="projects-{{ . }}.html">
+            <img style="padding: 20px" width="240" src="/static/images/projects/{{ . }}/thumbnails/!cover.jpeg">
+        </a>
+{{end}}
+</div>
+
+{{ end }}
+{{ define "title" }} Projects {{ end }}
