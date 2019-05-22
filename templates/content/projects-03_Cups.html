@@ -1,7 +1,7 @@
 {{ define "content" }}
 {{ $project := truncProj . }}
 
-<div class="projectName">  {{ $project }} </div>
+<div class="projectName">  {{ prune $project }} </div>
 
     <div class="photosContainer">
         <div id="photos-list">
