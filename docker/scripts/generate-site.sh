@@ -1,15 +1,86 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-git clone ${GIT_URL}
+echo `date` "start build site" > ${HOME}/docker-runner.log
 
-folderName=`echo ${GIT_URL} | sed -n 's/.*\/\([^ ]*\).git/\1/p'`
+while read request
+do
+    requestSignature=`echo ${request} | awk '$0 ~ /X-Hub-Signature/ {gsub(/X-Hub-Signature: sha1=/,""); print }' | sed 's/[^a-zA-Z0-9]//g'`
+#    echo `date` "requestSignature " ${requestSignature} >> ${HOME}/docker-runner.log
+    requestBody=`echo ${request} | grep github.com`
+#    echo `date` "request " ${request} >> ${HOME}/docker-runner.log
 
-cd $folderName
+    if [[ ! -z "$requestSignature" ]]
+     then
+        XHubSignature=${requestSignature}
+    fi
 
-bin/linux_arm/site_builder -generate -folder .
+    if [[ ! -z "${requestBody}" ]]
+     then
+        webhookBody=${requestBody}
+    fi
 
-git config --global user.email ${GIT_EMAIL}
-git config --global user.name ${GIT_NAME}
-git add .
-git commit -m "site built at `date +'%Y-%m-%d %H:%M:%S'`"
-git push
+    # compare HTTP_X_HUB_SIGNATURE with ${GITHUB_SECRET} - docker environment
+
+    locallyGeneratedHMAC=`echo -n ${webhookBody} | openssl sha1 -hmac ${GITHUB_SECRET} | awk '$0 ~ /\(stdin\)= / {gsub(/\(stdin\)= /,""); print }'`
+    echo `date` "XHubSignature " ${XHubSignature} >> ${HOME}/docker-runner.log
+    echo `date` "locallyGeneratedHMAC " ${locallyGeneratedHMAC} >> ${HOME}/docker-runner.log
+
+    if [[ ${XHubSignature} == ${locallyGeneratedHMAC} ]]
+     then
+        echo `date` "got trusted webhook body " ${webhookBody} >> ${HOME}/docker-runner.log
+
+        # check keyword 'deploy!'
+        messageKeyword=`echo ${webhookBody} | jq '.head_commit.message' | sed 's/\"//g'`
+
+        #echo `date` "INIT_KEYWORD " ${INIT_KEYWORD} >> ${HOME}/docker-runner.log
+        #echo `date` "if commit message contain keyword 'deploy!' " ${messageKeyword} >> ${HOME}/docker-runner.log
+
+        if [[ ${INIT_KEYWORD} == ${messageKeyword} ]]
+         then
+            # grep git variables
+            GIT_URL=`echo ${webhookBody} | jq -r '.repository.ssh_url'`
+            GIT_EMAIL=`echo ${webhookBody} | jq -r '.head_commit.committer.email'`
+            GIT_NAME=`echo ${webhookBody} | jq -r '.head_commit.committer.name'`
+
+            echo `date` "git variables GIT_URL, " ${GIT_URL} ${GIT_EMAIL} ${GIT_NAME} >> ${HOME}/docker-runner.log
+
+            # clone repo if repo doesn't exist
+            folderName=`echo ${GIT_URL} | sed -n 's/.*\/\([^ ]*\).git/\1/p'`
+
+            if [[ ! -d "/${folderName}/" ]]; then
+              git clone ${GIT_URL}
+            fi
+
+            cd ${folderName}
+
+            # run site_builder
+            unameOutput=`uname -a | awk -v platform='unknown' -v isDarwin='' -v isLinux='' -F ' ' '{ for(i=1;i<=NF;i++){ if($i=="armv7l"){platform="ARM"} else if($i=="Darwin"){platform="Darwin"} else if($i=="Linux" && !match($0, /armv7l/)){platform="Linux"}}; {print platform} }'`
+
+            echo `date` "platform type " ${unameOutput} >> cmdServer.log
+
+            case "${unameOutput}" in
+                Linux)    	platform=linux_x86_64;;
+                Darwin)    	platform=darwin_x86_64;;
+                ARM)    	platform=linux_arm;;
+                *)          platform="UNKNOWN"
+            esac
+
+            if [[ "${platform}" != "UNKNOWN" ]]; then
+                bin/${platform}/site_builder -generate -folder .  >> ${HOME}/docker-runner.log
+
+                cp ./static/CNAME ./docs/CNAME
+
+                git config --global user.email ${GIT_EMAIL}
+                git config --global user.name ${GIT_NAME}
+                git add .
+                git commit -m "site built at `date +'%Y-%m-%d %H:%M:%S'`"
+                git push >> ${HOME}/docker-runner.log
+
+                echo `date` "folderName" ${folderName} >> ${HOME}/docker-runner.log
+                echo `date` "run generate site"  >> ${HOME}/docker-runner.log
+            fi
+        fi
+
+    fi
+
+done < "${1:-/dev/stdin}"
