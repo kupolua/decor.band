@@ -4,6 +4,7 @@
     <div id="photos-list">
         {{range images}}
             <div class="photo-url"data-img-name="/static/images/portfolio/thumbnails/{{ . }}"></div>
+            <img class="mob-photo" width="100%" src="/static/images/portfolio/thumbnails/{{ . }}"/>
         {{end}}
     </div> <!--photo-list -->
 </div> <!-- photo container -->
