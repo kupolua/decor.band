@@ -68,8 +68,6 @@ do
             if [[ "${platform}" != "UNKNOWN" ]]; then
                 bin/${platform}/site_builder -generate -folder .  >> ${HOME}/docker-runner.log
 
-                cp ./static/CNAME ./docs/CNAME
-
                 git config --global user.email ${GIT_EMAIL}
                 git config --global user.name ${GIT_NAME}
                 git add .
