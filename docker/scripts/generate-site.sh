@@ -44,7 +44,7 @@ do
                 GIT_EMAIL=`echo ${webhookBody} | jq -r '.head_commit.committer.email'`
                 GIT_NAME=`echo ${webhookBody} | jq -r '.head_commit.committer.name'`
 
-                echo `date` "git variables GIT_URL, " ${GIT_URL} ${GIT_EMAIL} ${GIT_NAME} >> ${HOME}/docker-runner.log
+                echo `date` "git variables GIT_URL, GIT_EMAIL, GIT_NAME " ${GIT_URL} ${GIT_EMAIL} ${GIT_NAME} >> ${HOME}/docker-runner.log
 
                 # clone repo if repo doesn't exist
                 folderName=`echo ${GIT_URL} | sed -n 's/.*\/\([^ ]*\).git/\1/p'`
