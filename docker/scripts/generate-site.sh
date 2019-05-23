@@ -70,10 +70,14 @@ do
 
                 if [[ "${platform}" != "UNKNOWN" ]]; then
                     echo `date` "run generate site"  >> ${HOME}/docker-runner.log
-                    bin/${platform}/site_builder -generate -folder . >&1 >> ${HOME}/docker-runner.log
 
                     git config --global user.email ${GIT_EMAIL}
                     git config --global user.name ${GIT_NAME}
+
+                    git pull >> ${HOME}/docker-runner.log
+
+                    bin/${platform}/site_builder -generate -folder . >&1 >> ${HOME}/docker-runner.log
+
                     git add .
                     git commit -m "site built at `date +'%Y-%m-%d %H:%M:%S'`"
                     git status >> ${HOME}/docker-runner.log
