@@ -37,7 +37,7 @@ do
             #echo `date` "INIT_KEYWORD " ${INIT_KEYWORD} >> ${HOME}/docker-runner.log
             #echo `date` "if commit message contain keyword 'deploy!' " ${messageKeyword} >> ${HOME}/docker-runner.log
 
-            if [[ ${INIT_KEYWORD} == ${messageKeyword} ]]
+            if [[ ${TRIGGER_KEYWORD} == ${messageKeyword} ]]
              then
                 # grep git variables
                 GIT_URL=`echo ${webhookBody} | jq -r '.repository.ssh_url'`
@@ -81,6 +81,9 @@ do
 
                     echo `date` "finish build site" >> ${HOME}/docker-runner.log
                 fi
+             else
+                echo `date` "commit message does not contain trigger keyword " ${TRIGGER_KEYWORD} >> ${HOME}/docker-runner.log
+                echo `date` "finish build site" >> ${HOME}/docker-runner.log
             fi
          else
            echo `date` "could not verify request signature" >> ${HOME}/docker-runner.log
