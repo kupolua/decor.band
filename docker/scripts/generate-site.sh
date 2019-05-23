@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo `date` "start build site" > ${HOME}/docker-runner.log
+echo `date` "start build site" >> ${HOME}/docker-runner.log
 
 while read request
 do
@@ -59,7 +59,6 @@ do
                 # run site_builder
                 unameOutput=`uname -a | awk -v platform='unknown' -v isDarwin='' -v isLinux='' -F ' ' '{ for(i=1;i<=NF;i++){ if($i=="armv7l"){platform="ARM"} else if($i=="Darwin"){platform="Darwin"} else if($i=="Linux" && !match($0, /armv7l/)){platform="Linux"}}; {print platform} }'`
 
-                echo `date` "platform type " ${unameOutput} >> ${HOME}/docker-runner.log
 
                 case "${unameOutput}" in
                     Linux)    	platform=linux_x86_64;;
@@ -68,17 +67,20 @@ do
                     *)          platform="UNKNOWN"
                 esac
 
+                echo `date` "platform type " ${platform} >> ${HOME}/docker-runner.log
+
                 if [[ "${platform}" != "UNKNOWN" ]]; then
-                    echo `date` "run generate site"  >> ${HOME}/docker-runner.log
 
                     git config --global user.email ${GIT_EMAIL}
                     git config --global user.name ${GIT_NAME}
 
+                    echo `date` "run git pull"  >> ${HOME}/docker-runner.log
                     git pull >> ${HOME}/docker-runner.log
 
-                    bin/${platform}/site_builder -generate -folder .
+                    echo `date` "run site_builder"  >> ${HOME}/docker-runner.log
+                    ${PWD}/bin/${platform}/site_builder -generate -folder .
 
-                    git add .
+                    git add . >> ${HOME}/docker-runner.log
                     git commit -m "site built at `date +'%Y-%m-%d %H:%M:%S'`"
                     git status >> ${HOME}/docker-runner.log
                     git push >> ${HOME}/docker-runner.log
