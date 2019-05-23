@@ -6,5 +6,5 @@ docker run -ti --name site-builder --rm -p 4567:8080 -v ${HOME}/.ssh:/root/.ssh 
 # copy generate-site.sh into docker
 docker run -t --name site-builder --rm -p 4567:8080 -v ${HOME}/.ssh:/root/.ssh -e GITHUB_SECRET='228jTJmvQefA7EUUbiz1oT54v9jafBnlCjlWV3ZWBv05Chj0wFcVi2B6sRRWe8Kl' -e GIT_CMD_SERVER_URL='https://github.com/agapeteo/cmdServer.git' -e TRIGGER_KEYWORD='deploy!' kupolua/site-builder
 
-# build docker 
+# build and restart docker 
 docker kill site-builder && docker rmi kupolua/site-builder && docker build -t kupolua/site-builder:latest .
