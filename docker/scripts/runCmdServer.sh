@@ -25,5 +25,5 @@ if [[ "${platform}" != "UNKNOWN" ]]; then
       git clone ${GIT_CMD_SERVER_URL}
     fi
 
-    /${cmdServerFolderName}/bin/${platform}/cmdServer -cmd='grep -i "" | /scripts/generate-site.sh'
+    /${cmdServerFolderName}/bin/${platform}/cmdServer -cmd='grep -i "" | /scripts/generate-site.sh' >> cmdServer.log
 fi
