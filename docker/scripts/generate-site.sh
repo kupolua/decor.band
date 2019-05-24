@@ -78,7 +78,7 @@ do
                     git pull >> ${HOME}/docker-runner.log
 
                     echo `date` "run site_builder"  >> ${HOME}/docker-runner.log
-                    ${PWD}/bin/${platform}/site_builder -generate -folder .
+                    time ${PWD}/bin/${platform}/site_builder -generate -folder .
 
                     git add . >> ${HOME}/docker-runner.log
                     git commit -m "site built at `date +'%Y-%m-%d %H:%M:%S'`"
