@@ -31,14 +31,6 @@
         margin-top: 25px;
         margin-bottom: 25px;
     }
-  
-  .menu-test{
-        display: flex;
-        justify-content: center;
-        flex-direction: row;
-        margin-top: 25px;
-        margin-bottom: 25px;
-    }
 
     .menuItem{
         font-weight: bold;
